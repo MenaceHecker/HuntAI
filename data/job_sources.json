@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Example Greenhouse Board",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/example/jobs"
+  },
+  {
+    "name": "Example Lever Board",
+    "type": "lever",
+    "url": "https://api.lever.co/v0/postings/example?mode=json"
+  }
+]
