@@ -1,0 +1,47 @@
+{
+  "preferred_titles": [
+    "software engineer",
+    "backend engineer",
+    "platform engineer",
+    "cloud engineer",
+    "site reliability engineer",
+    "devops engineer",
+    "infrastructure engineer",
+    "full stack engineer"
+  ],
+  "preferred_locations": [
+    "united states",
+    "usa",
+    "remote",
+    "new york",
+    "atlanta",
+    "georgia"
+  ],
+  "must_have_skills": [
+    "python",
+    "java",
+    "aws",
+    "sql",
+    "rest api"
+  ],
+  "nice_to_have_skills": [
+    "docker",
+    "kubernetes",
+    "terraform",
+    "prometheus",
+    "grafana",
+    "postgresql",
+    "fastapi",
+    "spring boot",
+    "typescript",
+    "react"
+  ],
+  "blocked_seniority_terms": [
+    "senior",
+    "staff",
+    "principal",
+    "lead",
+    "manager",
+    "director"
+  ]
+}
