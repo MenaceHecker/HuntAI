@@ -1,12 +1,12 @@
 [
   {
-    "name": "Example Greenhouse Board",
+    "name": "Datadog",
     "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/example/jobs"
+    "url": "https://boards-api.greenhouse.io/v1/boards/datadog/jobs"
   },
   {
-    "name": "Example Lever Board",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/example?mode=json"
+    "name": "Vercel",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs"
   }
 ]
