@@ -23,6 +23,7 @@ def run_pipeline():
         job = item["job"]
         print(f"[debug] {item['score']}/100 | {job.title} | {job.company} | {job.location}")
         print(f"[debug] breakdown = {item['breakdown']}")
+        print(f"[debug] preview = {job.description[:200]}")
 
     min_score_threshold = 35
     shortlisted = [item for item in scored_jobs if item["score"] >= min_score_threshold]
