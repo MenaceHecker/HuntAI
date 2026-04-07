@@ -6,19 +6,24 @@ def is_relevant_role(title: str) -> bool:
     title = normalize_text(title)
 
     allowed_keywords = [
-        "software engineer",
-        "backend engineer",
-        "platform engineer",
-        "full stack engineer",
-        "full-stack engineer",
-        "frontend engineer",
-        "developer",
-        "sre",
-        "site reliability",
-        "devops",
-        "cloud engineer",
-        "infrastructure engineer",
-    ]
+    "software engineer",
+    "backend engineer",
+    "platform engineer",
+    "full stack engineer",
+    "full-stack engineer",
+    "frontend engineer",
+    "developer",
+    "sre",
+    "site reliability",
+    "devops",
+    "cloud engineer",
+    "infrastructure engineer",
+    "software developer",
+    "application engineer",
+    "solutions engineer",
+    "new grad",
+    "early career"
+]
 
     blocked_keywords = [
         "senior",
