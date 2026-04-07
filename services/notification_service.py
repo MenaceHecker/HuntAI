@@ -1,6 +1,11 @@
 def send_notification(jobs):
-    print("\n📬 Jobs Found:\n")
-    for job in jobs:
-        print(f"{job['title']} at {job['company']}")
-        print(job["link"])
-        print("-" * 40)
+    if not jobs:
+        print("[notify] no matching jobs found")
+        return
+
+    print(f"\n[notify] {len(jobs)} matching jobs found:\n")
+
+    for idx, job in enumerate(jobs, start=1):
+        print(f"{idx}. {job.title} | {job.company} | {job.location}")
+        print(job.link)
+        print("-" * 60)
