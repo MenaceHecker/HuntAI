@@ -1,4 +1,4 @@
-from services.filter_service import is_relevant_role, sponsorship_signal
+from services.filter_service import is_relevant_role
 
 
 def filter_jobs(jobs):
@@ -6,9 +6,6 @@ def filter_jobs(jobs):
 
     for job in jobs:
         if not is_relevant_role(job.title):
-            continue
-
-        if not sponsorship_signal(job.description):
             continue
 
         filtered.append(job)
