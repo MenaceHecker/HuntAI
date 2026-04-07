@@ -1,10 +1,16 @@
-def filter_jobs(jobs):
-    keywords = ["visa", "h1b", "sponsor"]
+from services.filter_service import is_relevant_role, sponsorship_signal
 
+
+def filter_jobs(jobs):
     filtered = []
+
     for job in jobs:
-        desc = job["description"].lower()
-        if any(k in desc for k in keywords):
-            filtered.append(job)
+        if not is_relevant_role(job.title):
+            continue
+
+        if not sponsorship_signal(job.description):
+            continue
+
+        filtered.append(job)
 
     return filtered
