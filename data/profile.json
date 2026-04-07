@@ -21,8 +21,12 @@
     "python",
     "java",
     "aws",
+    "api",
+    "apis",
+    "backend",
+    "distributed systems",
     "sql",
-    "rest api"
+    "databases"
   ],
   "nice_to_have_skills": [
     "docker",
@@ -32,9 +36,16 @@
     "grafana",
     "postgresql",
     "fastapi",
+    "spring",
     "spring boot",
     "typescript",
-    "react"
+    "javascript",
+    "react",
+    "ci/cd",
+    "cloud",
+    "infrastructure",
+    "observability",
+    "security"
   ],
   "blocked_seniority_terms": [
     "senior",
