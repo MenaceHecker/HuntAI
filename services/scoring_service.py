@@ -1,18 +1,31 @@
 from services.profile_service import load_profile
+import re
+from services.profile_service import load_profile
 
 
 def normalize(text: str) -> str:
-    return (text or "").strip().lower()
+    text = (text or "").lower()
+    text = re.sub(r"<[^>]+>", " ", text)          # strip HTML tags
+    text = re.sub(r"[^a-z0-9+#./\-\s]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
 def contains_any(text: str, terms: list[str]) -> bool:
     text = normalize(text)
-    return any(term in text for term in terms)
+    return any(normalize(term) in text for term in terms)
 
 
 def count_matches(text: str, terms: list[str]) -> int:
     text = normalize(text)
-    return sum(1 for term in terms if term in text)
+    matches = 0
+
+    for term in terms:
+        normalized_term = normalize(term)
+        if normalized_term in text:
+            matches += 1
+
+    return matches
 
 
 def score_job(job) -> dict:
