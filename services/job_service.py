@@ -1,14 +1,17 @@
 from services.db import conn, cursor
 
 
-def save_jobs(jobs):
+def save_jobs(scored_jobs):
     inserted = 0
 
-    for job in jobs:
+    for item in scored_jobs:
+        job = item["job"]
+        score = item["score"]
+
         try:
             cursor.execute("""
-            INSERT INTO jobs (title, company, location, link, description, source)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO jobs (title, company, location, link, description, source, score)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
                 job.title,
                 job.company,
@@ -16,10 +19,10 @@ def save_jobs(jobs):
                 job.link,
                 job.description,
                 job.source,
+                score,
             ))
             inserted += 1
         except Exception:
-            # likely duplicate due to UNIQUE link
             continue
 
     conn.commit()
