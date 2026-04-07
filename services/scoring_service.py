@@ -45,6 +45,24 @@ def score_job(job) -> dict:
     score += title_points
     breakdown["title_match"] = title_points
 
+    # 1b. Domain alignment bonus: 0-10
+    domain_terms = [
+        "backend",
+        "infrastructure",
+        "cloud",
+        "security",
+        "platform",
+        "deployment",
+        "compute",
+        "cdn",
+        "observability",
+        "workflows"
+    ]
+    domain_matches = count_matches(title, domain_terms)
+    domain_points = min(10, domain_matches * 5)
+    score += domain_points
+    breakdown["domain_alignment"] = domain_points
+
     # 2. Sponsorship signal: 0-25
     positive_sponsorship_terms = [
         "h1b",
