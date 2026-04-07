@@ -86,7 +86,6 @@ def score_job(job) -> dict:
     breakdown["seniority_penalty"] = -penalty
 
     final_score = max(0, min(100, score))
-
     return {
         "job": job,
         "score": final_score,
