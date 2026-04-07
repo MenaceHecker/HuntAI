@@ -14,6 +14,7 @@ def init_db():
         link TEXT NOT NULL UNIQUE,
         description TEXT,
         source TEXT,
+        score INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
