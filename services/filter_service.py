@@ -6,24 +6,22 @@ def is_relevant_role(title: str) -> bool:
     title = normalize_text(title)
 
     allowed_keywords = [
-    "software engineer",
-    "backend engineer",
-    "platform engineer",
-    "full stack engineer",
-    "full-stack engineer",
-    "frontend engineer",
-    "developer",
-    "sre",
-    "site reliability",
-    "devops",
-    "cloud engineer",
-    "infrastructure engineer",
-    "software developer",
-    "application engineer",
-    "solutions engineer",
-    "new grad",
-    "early career"
-]
+        "software engineer",
+        "backend engineer",
+        "platform engineer",
+        "full stack engineer",
+        "full-stack engineer",
+        "frontend engineer",
+        "software developer",
+        "application engineer",
+        "cloud engineer",
+        "infrastructure engineer",
+        "devops engineer",
+        "site reliability engineer",
+        "sre",
+        "new grad software engineer",
+        "early career software engineer"
+    ]
 
     blocked_keywords = [
         "senior",
@@ -32,9 +30,13 @@ def is_relevant_role(title: str) -> bool:
         "manager",
         "director",
         "intern",
-        "sales",
-        "designer",
         "recruiter",
+        "curriculum",
+        "developer success",
+        "customer success",
+        "solutions consultant",
+        "sales",
+        "security instructor"
     ]
 
     if any(word in title for word in blocked_keywords):
