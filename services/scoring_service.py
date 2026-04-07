@@ -54,7 +54,7 @@ def score_job(job) -> dict:
     elif contains_any(description, positive_sponsorship_terms):
         sponsorship_points = 25
     else:
-        sponsorship_points = 8
+        sponsorship_points = 15
 
     score += sponsorship_points
     breakdown["sponsorship"] = sponsorship_points
