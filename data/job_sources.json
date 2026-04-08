@@ -1,12 +1,42 @@
 [
   {
+    "name": "Vercel",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs"
+  },
+  {
     "name": "Datadog",
     "type": "greenhouse",
     "url": "https://boards-api.greenhouse.io/v1/boards/datadog/jobs"
   },
   {
-    "name": "Vercel",
+    "name": "Stripe",
     "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs"
+    "url": "https://boards-api.greenhouse.io/v1/boards/stripe/jobs"
+  },
+  {
+    "name": "Plaid",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/plaid/jobs"
+  },
+  {
+    "name": "GumGum",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/gumgum/jobs"
+  },
+  {
+    "name": "Canonical",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/canonical/jobs"
+  },
+  {
+    "name": "Postman",
+    "type": "lever",
+    "url": "https://api.lever.co/v0/postings/postman?mode=json"
+  },
+  {
+    "name": "Rippling",
+    "type": "lever",
+    "url": "https://api.lever.co/v0/postings/rippling?mode=json"
   }
 ]
