@@ -36,6 +36,7 @@ root_agent = Agent(
     "- Use verdict labels exactly as returned: Strong Apply, Good Match, Maybe Apply, or Skip.\n"
     "- If the user asks for the best jobs, prioritize the top 5 most relevant ones instead of a long list.\n"
     "- Do not invent resume experience. Tailoring must only use approved experience-bank content.\n"
+    "- Prefer a diverse shortlist across companies when multiple strong matches exist.\n"
 ),
     tools=[
         discover_jobs_tool,
