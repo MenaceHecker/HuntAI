@@ -1,0 +1,102 @@
+{
+  "experience": [
+    {
+      "section": "work_experience",
+      "title": "Software Engineer, Platform Automation",
+      "organization": "Georgia Institute of Technology",
+      "bullets": [
+        {
+          "text": "Built and maintained automation services to provision and manage lab environments at scale, reducing manual setup time by 40% across 12 labs.",
+          "tags": ["python", "automation", "platform", "infrastructure", "backend", "systems"]
+        },
+        {
+          "text": "Designed internal tooling and workflows integrating identity, authentication, and system configuration services, improving reliability and reducing identity-related incidents by 50%.",
+          "tags": ["authentication", "backend", "platform", "reliability", "security", "automation"]
+        },
+        {
+          "text": "Implemented monitoring and service-health checks for recurring failures, lowering incident volume by 25%.",
+          "tags": ["monitoring", "observability", "reliability", "platform", "backend"]
+        },
+        {
+          "text": "Optimized system configuration and network segmentation, improving performance and stability by 30%.",
+          "tags": ["networking", "systems", "infrastructure", "performance", "security"]
+        },
+        {
+          "text": "Partnered with the SRE team on failover strategies that improved service availability from 97.5% to 99.9%.",
+          "tags": ["sre", "availability", "failover", "reliability", "cloud", "infrastructure"]
+        }
+      ]
+    },
+    {
+      "section": "projects",
+      "title": "Nexus",
+      "organization": "Personal Project",
+      "bullets": [
+        {
+          "text": "Built a distributed observability platform using Python, Flask, Prometheus, Grafana, Elasticsearch, Kibana, and PostgreSQL to process 15,000+ metrics per minute across multiple microservices.",
+          "tags": ["python", "flask", "prometheus", "grafana", "elasticsearch", "postgresql", "observability", "distributed systems", "backend"]
+        },
+        {
+          "text": "Implemented real-time alerting and centralized log aggregation, reducing incident detection time by 85% and improving production visibility.",
+          "tags": ["alerting", "logging", "observability", "monitoring", "backend", "reliability"]
+        },
+        {
+          "text": "Designed SLO and error-budget tracking workflows with rate-limited alerting and backoff strategies to improve reliability engineering coverage.",
+          "tags": ["slo", "error budgets", "reliability", "sre", "observability", "backend"]
+        }
+      ]
+    },
+    {
+      "section": "projects",
+      "title": "CareerSync",
+      "organization": "Personal Project",
+      "bullets": [
+        {
+          "text": "Built an AI-powered browser extension using React, TypeScript, Tailwind, AWS Lambda, PDF.js, and Mammoth to compare resumes against job descriptions and identify missing skills.",
+          "tags": ["react", "typescript", "aws", "lambda", "frontend", "extension", "nlp", "ai"]
+        },
+        {
+          "text": "Integrated a fine-tuned model pipeline for resume and job-description comparison, improving match precision by over 85% while maintaining sub-second UI load times.",
+          "tags": ["ml", "ai", "nlp", "typescript", "performance", "frontend", "backend"]
+        }
+      ]
+    },
+    {
+      "section": "projects",
+      "title": "InboxIQ",
+      "organization": "Personal Project",
+      "bullets": [
+        {
+          "text": "Developed a serverless email triage platform with Next.js, TypeScript, Prisma, AWS SES, and Python to classify and prioritize messages with 92% accuracy.",
+          "tags": ["nextjs", "typescript", "python", "aws", "ses", "prisma", "backend", "automation"]
+        },
+        {
+          "text": "Reduced operational overhead by 30% through automated email categorization and workflow optimization.",
+          "tags": ["automation", "optimization", "backend", "productivity"]
+        }
+      ]
+    },
+    {
+      "section": "projects",
+      "title": "Procuroid",
+      "organization": "Hackathon Project",
+      "bullets": [
+        {
+          "text": "Built a multi-agent procurement platform using Python, Flask, Google Cloud, Supabase, Twilio, and ElevenLabs that reduced sourcing cycles by 90% and accelerated quote turnaround by 10x.",
+          "tags": ["python", "flask", "gcp", "agents", "automation", "backend", "cloud"]
+        }
+      ]
+    }
+  ],
+  "skills": {
+    "languages": ["Python", "Java", "TypeScript", "JavaScript", "SQL"],
+    "frameworks": ["FastAPI", "Flask", "Spring Boot", "React", "Next.js"],
+    "cloud": ["AWS", "Google Cloud"],
+    "tools": ["Docker", "Kubernetes", "Terraform", "Prometheus", "Grafana", "Elasticsearch", "PostgreSQL", "Prisma", "Git", "CI/CD"]
+  },
+  "rules": [
+    "Only use approved bullets from this experience bank.",
+    "Do not invent projects, metrics, or responsibilities.",
+    "Prefer bullets with strongest tag overlap with the target job."
+  ]
+}
