@@ -7,7 +7,11 @@ from services.source_service import load_sources
 def fetch_greenhouse_jobs(source):
     jobs = []
     try:
-        response = requests.get(source["url"], timeout=20)
+        response = requests.get(
+            source["url"],
+            params={"content": "true"},
+            timeout=20,
+        )
         response.raise_for_status()
         data = response.json()
 
