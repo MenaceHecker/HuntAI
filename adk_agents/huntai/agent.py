@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from google.adk.agents.llm_agent import Agent
 
-from adk_app.tools import discover_jobs_tool, score_jobs_tool, tailor_resume_tool
+from .tools import discover_jobs_tool, score_jobs_tool, tailor_resume_tool
 
 load_dotenv()
 
