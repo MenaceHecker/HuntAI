@@ -9,12 +9,6 @@ from services.scoring_service import score_jobs
 
 
 def discover_jobs_tool(limit: int = 25) -> dict[str, Any]:
-    """
-    Discover jobs from configured sources and return a compact preview.
-
-    Args:
-        limit: Maximum number of jobs to include in the response preview.
-    """
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
 
@@ -37,13 +31,6 @@ def discover_jobs_tool(limit: int = 25) -> dict[str, Any]:
 
 
 def score_jobs_tool(limit: int = 10, min_score: int = 45) -> dict[str, Any]:
-    """
-    Discover, filter, score, and shortlist jobs.
-
-    Args:
-        limit: Maximum number of shortlisted jobs to return.
-        min_score: Minimum score threshold for shortlist inclusion.
-    """
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
     jobs = filter_jobs(jobs)
@@ -62,6 +49,8 @@ def score_jobs_tool(limit: int = 10, min_score: int = 45) -> dict[str, Any]:
                 "link": job.link,
                 "source": job.source,
                 "score": item["score"],
+                "verdict": item["verdict"],
+                "reasons": item["reasons"],
                 "breakdown": item["breakdown"],
             }
         )
