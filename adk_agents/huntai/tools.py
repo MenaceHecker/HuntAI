@@ -30,16 +30,32 @@ def discover_jobs_tool(limit: int = 25) -> dict[str, Any]:
     }
 
 
-def score_jobs_tool(limit: int = 10, min_score: int = 45) -> dict[str, Any]:
+def score_jobs_tool(limit: int = 10, min_score: int = 45, max_per_company: int = 2) -> dict[str, Any]:
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
     jobs = filter_jobs(jobs)
 
     scored = score_jobs(jobs)
-    shortlisted = [item for item in scored if item["score"] >= min_score][:limit]
+    scored = [item for item in scored if item["score"] >= min_score]
+
+    company_counts = {}
+    diversified = []
+
+    for item in scored:
+        company = item["job"].company
+        company_counts.setdefault(company, 0)
+
+        if company_counts[company] >= max_per_company:
+            continue
+
+        diversified.append(item)
+        company_counts[company] += 1
+
+        if len(diversified) >= limit:
+            break
 
     results = []
-    for item in shortlisted:
+    for item in diversified:
         job = item["job"]
         results.append(
             {
