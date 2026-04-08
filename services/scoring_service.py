@@ -1,11 +1,10 @@
-from services.profile_service import load_profile
 import re
 from services.profile_service import load_profile
 
 
 def normalize(text: str) -> str:
     text = (text or "").lower()
-    text = re.sub(r"<[^>]+>", " ", text)          # strip HTML tags
+    text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"[^a-z0-9+#./\-\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
@@ -19,13 +18,59 @@ def contains_any(text: str, terms: list[str]) -> bool:
 def count_matches(text: str, terms: list[str]) -> int:
     text = normalize(text)
     matches = 0
-
     for term in terms:
         normalized_term = normalize(term)
         if normalized_term in text:
             matches += 1
-
     return matches
+
+
+def get_verdict(score: int) -> str:
+    if score >= 80:
+        return "Strong Apply"
+    if score >= 65:
+        return "Good Match"
+    if score >= 50:
+        return "Maybe Apply"
+    return "Skip"
+
+
+def build_match_reasons(job, breakdown: dict) -> list[str]:
+    reasons = []
+
+    title = normalize(job.title)
+    location = normalize(job.location)
+
+    if breakdown.get("title_match", 0) > 0:
+        reasons.append("strong software engineering title match")
+
+    if breakdown.get("domain_alignment", 0) >= 8:
+        reasons.append("high alignment with backend/platform/infrastructure work")
+    elif breakdown.get("domain_alignment", 0) > 0:
+        reasons.append("some alignment with your target engineering domains")
+
+    if breakdown.get("must_have_skills", 0) >= 10:
+        reasons.append("multiple core skills matched")
+    elif breakdown.get("must_have_skills", 0) > 0:
+        reasons.append("at least one core skill matched")
+
+    if breakdown.get("nice_to_have_skills", 0) >= 6:
+        reasons.append("good overlap with supporting tools and stack")
+    elif breakdown.get("nice_to_have_skills", 0) > 0:
+        reasons.append("some overlap with supporting tools")
+
+    if breakdown.get("location", 0) > 0:
+        if "remote" in location:
+            reasons.append("preferred remote or U.S. location")
+        else:
+            reasons.append("preferred location match")
+
+    if breakdown.get("sponsorship", 0) >= 20:
+        reasons.append("clear sponsorship signal")
+    elif breakdown.get("sponsorship", 0) > 0:
+        reasons.append("no negative sponsorship signal found")
+
+    return reasons[:4]
 
 
 def score_job(job) -> dict:
@@ -45,7 +90,7 @@ def score_job(job) -> dict:
     score += title_points
     breakdown["title_match"] = title_points
 
-    # 1b. Domain alignment bonus: 0-10
+    # 2. Domain alignment bonus: 0-8
     domain_terms = [
         "backend",
         "infrastructure",
@@ -56,14 +101,15 @@ def score_job(job) -> dict:
         "compute",
         "cdn",
         "observability",
-        "workflows"
+        "workflows",
+        "distributed systems"
     ]
     domain_matches = count_matches(title, domain_terms)
-    domain_points = min(10, domain_matches * 5)
+    domain_points = min(8, domain_matches * 4)
     score += domain_points
     breakdown["domain_alignment"] = domain_points
 
-    # 2. Sponsorship signal: 0-25
+    # 3. Sponsorship signal: 0-20
     positive_sponsorship_terms = [
         "h1b",
         "visa sponsorship",
@@ -83,44 +129,49 @@ def score_job(job) -> dict:
     if contains_any(description, negative_sponsorship_terms):
         sponsorship_points = 0
     elif contains_any(description, positive_sponsorship_terms):
-        sponsorship_points = 25
+        sponsorship_points = 20
     else:
-        sponsorship_points = 15
+        sponsorship_points = 10
 
     score += sponsorship_points
     breakdown["sponsorship"] = sponsorship_points
 
-    # 3. Must-have skills: 0-25
+    # 4. Must-have skills: 0-25
     must_have_skills = profile["must_have_skills"]
     must_matches = count_matches(combined_text, must_have_skills)
     must_points = min(25, must_matches * 5)
     score += must_points
     breakdown["must_have_skills"] = must_points
 
-    # 4. Nice-to-have skills: 0-15
+    # 5. Nice-to-have skills: 0-12
     nice_to_have_skills = profile["nice_to_have_skills"]
     nice_matches = count_matches(combined_text, nice_to_have_skills)
-    nice_points = min(15, nice_matches * 3)
+    nice_points = min(12, nice_matches * 3)
     score += nice_points
     breakdown["nice_to_have_skills"] = nice_points
 
-    # 5. Preferred location: 0-10
+    # 6. Preferred location: 0-5
     preferred_locations = profile["preferred_locations"]
-    location_points = 10 if contains_any(location, preferred_locations) else 0
+    location_points = 5 if contains_any(location, preferred_locations) else 0
     score += location_points
     breakdown["location"] = location_points
 
-    # 6. Seniority penalty: subtract up to 20
+    # 7. Seniority penalty: subtract 20
     blocked_terms = profile["blocked_seniority_terms"]
     penalty = 20 if contains_any(title, blocked_terms) else 0
     score -= penalty
     breakdown["seniority_penalty"] = -penalty
 
     final_score = max(0, min(100, score))
+    verdict = get_verdict(final_score)
+    reasons = build_match_reasons(job, breakdown)
+
     return {
         "job": job,
         "score": final_score,
-        "breakdown": breakdown
+        "breakdown": breakdown,
+        "verdict": verdict,
+        "reasons": reasons,
     }
 
 
