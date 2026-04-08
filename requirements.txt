@@ -3,4 +3,4 @@ uvicorn
 requests
 beautifulsoup4
 playwright
-python-dotenv
+python-dotenvgoogle-adk
