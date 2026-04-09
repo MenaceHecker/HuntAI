@@ -15,6 +15,7 @@ from adk_agents.huntai.tools import (
     score_jobs_tool,
     tailor_resume_tool,
     score_and_tailor_top_tool,
+    build_opportunity_brief_tool,
 )
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
