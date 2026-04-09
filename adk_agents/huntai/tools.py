@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
-
+from services.tailoring_service import tailor_resume_for_job
 from agents.discovery_agent import fetch_jobs
 from agents.eligibility_agent import filter_jobs
 from services.dedupe_service import unique_jobs
@@ -78,31 +78,12 @@ def score_jobs_tool(limit: int = 10, min_score: int = 45, max_per_company: int =
     }
 
 
-def tailor_resume_tool(job_title: str, company: str, job_link: str = "") -> dict[str, Any]:
-    """
-    Stub for resume tailoring. For now, returns a structured placeholder so the
-    agent can include it in orchestration.
+def tailor_resume_tool(job_title: str, company: str, job_description: str = "", job_link: str = "") -> dict[str, Any]:
+    result = tailor_resume_for_job(
+        job_title=job_title,
+        company=company,
+        job_description=job_description,
+    )
 
-    Args:
-        job_title: Job title to tailor for.
-        company: Company name.
-        job_link: Optional job posting link.
-    """
-    return {
-        "status": "success",
-        "message": "Resume tailoring stub created. Next step is to connect the experience bank.",
-        "target_job": {
-            "title": job_title,
-            "company": company,
-            "link": job_link,
-        },
-        "resume_plan": {
-            "focus_areas": [
-                "backend",
-                "cloud",
-                "automation",
-                "observability",
-            ],
-            "next_step": "Use approved bullets from experience_bank.json only.",
-        },
-    }
+    result["target_job"]["link"] = job_link
+    return result
