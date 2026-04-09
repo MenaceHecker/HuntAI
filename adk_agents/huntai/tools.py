@@ -15,6 +15,70 @@ from services.scoring_service import score_jobs
 from services.tailoring_service import tailor_resume_for_job
 
 
+def is_us_location(location: str) -> bool:
+    location = (location or "").lower()
+
+    explicit_non_us_terms = [
+        "poland",
+        "mexico",
+        "canada",
+        "toronto",
+        "vancouver",
+        "montreal",
+        "israel",
+        "tel aviv",
+        "warsaw",
+        "portugal",
+        "lisbon",
+        "germany",
+        "berlin",
+        "united kingdom",
+        "uk",
+        "london",
+        "ireland",
+        "dublin",
+        "india",
+        "singapore",
+        "tokyo",
+        "japan",
+        "australia",
+        "remote - poland",
+        "remote - mexico",
+        "remote - canada",
+    ]
+
+    if any(term in location for term in explicit_non_us_terms):
+        return False
+
+    us_terms = [
+        "united states",
+        "usa",
+        "u.s.",
+        " us ",
+        "remote - united states",
+        "remote in us",
+        "remote us",
+        "new york",
+        "california",
+        "san francisco",
+        "seattle",
+        "austin",
+        "atlanta",
+        "georgia",
+        "boston",
+        "chicago",
+        "washington",
+        "texas",
+    ]
+
+    return any(term in location for term in us_terms)
+
+
+def is_remote_location(location: str) -> bool:
+    location = (location or "").lower()
+    return "remote" in location
+
+
 def discover_jobs_tool(limit: int = 25) -> dict[str, Any]:
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
@@ -41,12 +105,21 @@ def score_jobs_tool(
     limit: int = 10,
     min_score: int = 45,
     max_per_company: int = 2,
+    us_only: bool = True,
+    remote_only: bool = False,
 ) -> dict[str, Any]:
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
     jobs = filter_jobs(jobs)
 
     scored = score_jobs(jobs)
+
+    if us_only:
+        scored = [item for item in scored if is_us_location(item["job"].location)]
+
+    if remote_only:
+        scored = [item for item in scored if is_remote_location(item["job"].location)]
+
     scored = [item for item in scored if item["score"] >= min_score]
 
     company_counts: dict[str, int] = {}
@@ -120,11 +193,15 @@ def score_and_tailor_top_tool(
     limit: int = 5,
     min_score: int = 45,
     max_per_company: int = 2,
+    us_only: bool = True,
+    remote_only: bool = False,
 ) -> dict[str, Any]:
     scored_result = score_jobs_tool(
         limit=limit,
         min_score=min_score,
         max_per_company=max_per_company,
+        us_only=us_only,
+        remote_only=remote_only,
     )
 
     results = scored_result.get("results", [])
@@ -146,7 +223,6 @@ def score_and_tailor_top_tool(
         job_link=top_job["link"],
     )
 
-    # remove description from shortlist payload to keep response smaller
     cleaned_shortlist = []
     for item in results:
         cleaned = dict(item)
