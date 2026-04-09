@@ -1,5 +1,6 @@
 import re
 from services.profile_service import load_profile
+from services.tailoring_service import extract_keywords
 
 STRONG_DOMAINS = {
     "infrastructure",
@@ -42,6 +43,16 @@ def count_matches(text: str, terms: list[str]) -> int:
         if normalized_term in text:
             matches += 1
     return matches
+
+
+def compute_domain_score(job_keywords: set[str]) -> int:
+    strong_matches = len(job_keywords.intersection(STRONG_DOMAINS))
+    weak_matches = len(job_keywords.intersection(WEAK_DOMAINS))
+
+    score = strong_matches * 4
+    score -= weak_matches * 2
+
+    return max(0, min(score, 12))
 
 
 def get_verdict(score: int) -> str:
@@ -108,25 +119,8 @@ def score_job(job) -> dict:
     score += title_points
     breakdown["title_match"] = title_points
 
-    domain_terms = [
-        "backend",
-        "infrastructure",
-        "cloud",
-        "security",
-        "platform",
-        "deployment",
-        "compute",
-        "cdn",
-        "observability",
-        "workflows",
-        "distributed systems",
-        "telemetry",
-        "developer experience",
-        "product platform",
-        "data infrastructure",
-    ]
-    domain_matches = count_matches(title, domain_terms)
-    domain_points = min(8, domain_matches * 4)
+    job_keywords = extract_keywords(combined_text)
+    domain_points = compute_domain_score(job_keywords)
     score += domain_points
     breakdown["domain_alignment"] = domain_points
 
