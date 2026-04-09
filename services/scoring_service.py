@@ -22,9 +22,10 @@ WEAK_TITLE_DOMAINS = {
     "ads": -8,
     "brands": -6,
     "frontend": -5,
-    "ui": -6
+    "ui": -6,
 }
-STRONG_DOMAINS = {
+
+STRONG_DESCRIPTION_DOMAINS = {
     "infrastructure",
     "platform",
     "distributed systems",
@@ -34,15 +35,19 @@ STRONG_DOMAINS = {
     "monitoring",
     "telemetry",
     "sre",
+    "cloud",
+    "ci/cd",
+    "automation",
+    "security",
 }
 
-WEAK_DOMAINS = {
-    "frontend",
+WEAK_DESCRIPTION_DOMAINS = {
     "ads",
-    "mobile",
+    "brands",
     "ui",
     "design",
 }
+
 
 def normalize(text: str) -> str:
     text = (text or "").lower()
@@ -67,27 +72,31 @@ def count_matches(text: str, terms: list[str]) -> int:
     return matches
 
 
-def compute_domain_score(job_keywords: set[str]) -> int:
-    strong_matches = len(job_keywords.intersection(STRONG_DOMAINS))
-    weak_matches = len(job_keywords.intersection(WEAK_DOMAINS))
+def compute_title_domain_score(title: str) -> int:
+    t = normalize(title)
+    score = 0
 
-    score = strong_matches * 4
+    for term, points in STRONG_TITLE_DOMAINS.items():
+        if term in t:
+            score += points
+
+    for term, points in WEAK_TITLE_DOMAINS.items():
+        if term in t:
+            score += points
+
+    return max(-10, min(score, 12))
+
+
+def compute_description_domain_score(description: str) -> int:
+    keywords = extract_keywords(description)
+
+    strong_matches = len(keywords.intersection(STRONG_DESCRIPTION_DOMAINS))
+    weak_matches = len(keywords.intersection(WEAK_DESCRIPTION_DOMAINS))
+
+    score = strong_matches * 2
     score -= weak_matches * 2
 
-    return max(0, min(score, 12))
-
-
-def title_domain_boost(title: str) -> int:
-    t = title.lower()
-
-    if any(x in t for x in ["infrastructure", "platform", "systems"]):
-        return 6
-    if "backend" in t:
-        return 3
-    if any(x in t for x in ["frontend", "ads", "ui"]):
-        return -2
-
-    return 0
+    return max(0, min(score, 6))
 
 
 def get_verdict(score: int) -> str:
@@ -103,16 +112,23 @@ def get_verdict(score: int) -> str:
 def build_match_reasons(job, breakdown: dict) -> list[str]:
     reasons = []
 
-    title = normalize(job.title)
     location = normalize(job.location)
 
     if breakdown.get("title_match", 0) > 0:
         reasons.append("strong software engineering title match")
 
-    if breakdown.get("domain_alignment", 0) >= 8:
-        reasons.append("high alignment with backend/platform/infrastructure work")
-    elif breakdown.get("domain_alignment", 0) > 0:
-        reasons.append("some alignment with your target engineering domains")
+    title_domain = breakdown.get("title_domain", 0)
+    description_domain = breakdown.get("description_domain", 0)
+
+    if title_domain >= 8:
+        reasons.append("title strongly aligns with your preferred engineering domains")
+    elif title_domain > 0:
+        reasons.append("title shows some alignment with your target engineering domains")
+
+    if description_domain >= 4:
+        reasons.append("job description reinforces backend/platform/infrastructure alignment")
+    elif description_domain > 0:
+        reasons.append("job description shows some supporting domain overlap")
 
     if breakdown.get("must_have_skills", 0) >= 10:
         reasons.append("multiple core skills matched")
@@ -130,7 +146,7 @@ def build_match_reasons(job, breakdown: dict) -> list[str]:
         else:
             reasons.append("preferred location match")
 
-    if breakdown.get("sponsorship", 0) >= 18:
+    if breakdown.get("sponsorship", 0) >= 15:
         reasons.append("clear sponsorship signal")
     elif breakdown.get("sponsorship", 0) > 0:
         reasons.append("sponsorship status not explicitly negative")
@@ -154,14 +170,13 @@ def score_job(job) -> dict:
     score += title_points
     breakdown["title_match"] = title_points
 
-    job_keywords = extract_keywords(combined_text)
-    domain_points = compute_domain_score(job_keywords)
-    score += domain_points
-    breakdown["domain_alignment"] = domain_points
-
-    title_domain_points = title_domain_boost(job.title)
+    title_domain_points = compute_title_domain_score(job.title)
     score += title_domain_points
-    breakdown["title_domain_boost"] = title_domain_points
+    breakdown["title_domain"] = title_domain_points
+
+    description_domain_points = compute_description_domain_score(job.description)
+    score += description_domain_points
+    breakdown["description_domain"] = description_domain_points
 
     positive_sponsorship_terms = [
         "h1b",
@@ -185,9 +200,9 @@ def score_job(job) -> dict:
     if contains_any(description, negative_sponsorship_terms):
         sponsorship_points = 0
     elif contains_any(description, positive_sponsorship_terms):
-        sponsorship_points = 20
+        sponsorship_points = 15
     else:
-        sponsorship_points = 8
+        sponsorship_points = 5
 
     score += sponsorship_points
     breakdown["sponsorship"] = sponsorship_points
