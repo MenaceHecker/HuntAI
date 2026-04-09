@@ -19,6 +19,45 @@ PRIORITY_TAG_WEIGHTS = {
     "performance": 2,
 }
 
+NOISY_FOCUS_KEYWORDS = {
+    "ai",
+    "ml",
+    "nlp",
+    "frontend",
+    "react",
+    "next.js",
+    "nextjs",
+    "javascript",
+    "typescript",
+}
+
+FOCUS_PRIORITY = [
+    "backend",
+    "infrastructure",
+    "platform",
+    "cloud",
+    "distributed systems",
+    "observability",
+    "monitoring",
+    "telemetry",
+    "reliability",
+    "security",
+    "automation",
+    "performance",
+    "python",
+    "java",
+    "aws",
+    "docker",
+    "kubernetes",
+    "terraform",
+    "postgresql",
+    "prometheus",
+    "grafana",
+    "elasticsearch",
+    "api",
+    "apis",
+]
+
 
 def normalize(text: str) -> str:
     text = (text or "").lower()
@@ -33,6 +72,41 @@ def load_experience_bank():
     path = base_dir / "data" / "experience_bank.json"
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def rank_focus_areas(job_keywords: set[str]) -> list[str]:
+    ordered = [kw for kw in FOCUS_PRIORITY if kw in job_keywords]
+    remaining = sorted(
+        kw for kw in job_keywords
+        if kw not in ordered and kw not in NOISY_FOCUS_KEYWORDS
+    )
+    return (ordered + remaining)[:8]
+
+
+def dedupe_bullets(ranked_bullets: list[dict], limit: int = 6) -> list[dict]:
+    results = []
+    seen_text = set()
+    section_counts = {}
+
+    for bullet in ranked_bullets:
+        text = bullet["text"]
+        section = bullet["section"]
+
+        if text in seen_text:
+            continue
+
+        # keep some diversity so one section does not dominate every tailored plan
+        if section_counts.get(section, 0) >= 4:
+            continue
+
+        seen_text.add(text)
+        section_counts[section] = section_counts.get(section, 0) + 1
+        results.append(bullet)
+
+        if len(results) >= limit:
+            break
+
+    return results
 
 
 def extract_keywords(text: str) -> set[str]:
@@ -61,6 +135,12 @@ def score_bullet(job_keywords: set[str], bullet: dict) -> int:
     for tag in overlap:
         score += PRIORITY_TAG_WEIGHTS.get(tag, 1)
 
+    # reward bullets that match multiple important areas instead of just one generic term
+    if len(overlap) >= 3:
+        score += 2
+    elif len(overlap) >= 2:
+        score += 1
+
     return score
 
 
@@ -87,7 +167,7 @@ def tailor_resume_for_job(job_title: str, company: str, job_description: str = "
 
     ranked_bullets.sort(key=lambda x: x["match_score"], reverse=True)
 
-    top_bullets = ranked_bullets[:6]
+    top_bullets = dedupe_bullets(ranked_bullets, limit=6)
 
     recommended_skills = []
     skill_groups = bank.get("skills", {})
@@ -95,6 +175,8 @@ def tailor_resume_for_job(job_title: str, company: str, job_description: str = "
         for item in items:
             if normalize(item) in job_keywords:
                 recommended_skills.append(item)
+
+    recommended_skills = list(dict.fromkeys(recommended_skills))
 
     if not recommended_skills:
         recommended_skills = (
@@ -104,7 +186,7 @@ def tailor_resume_for_job(job_title: str, company: str, job_description: str = "
             + skill_groups.get("tools", [])[:3]
         )
 
-    focus_areas = sorted(list(job_keywords))[:8]
+    focus_areas = rank_focus_areas(job_keywords)
 
     return {
         "status": "success",
