@@ -1,6 +1,25 @@
 import re
 from services.profile_service import load_profile
 
+STRONG_DOMAINS = {
+    "infrastructure",
+    "platform",
+    "distributed systems",
+    "backend",
+    "reliability",
+    "observability",
+    "monitoring",
+    "telemetry",
+    "sre",
+}
+
+WEAK_DOMAINS = {
+    "frontend",
+    "ads",
+    "mobile",
+    "ui",
+    "design",
+}
 
 def normalize(text: str) -> str:
     text = (text or "").lower()
