@@ -235,3 +235,61 @@ def score_and_tailor_top_tool(
         "shortlist": cleaned_shortlist,
         "top_job_resume_plan": tailored_result,
     }
+
+def build_opportunity_brief_tool(
+    limit: int = 5,
+    min_score: int = 45,
+    max_per_company: int = 2,
+    us_only: bool = True,
+    remote_only: bool = False,
+    strategy_mode: str = "safe_apply",
+) -> dict[str, Any]:
+    result = score_and_tailor_top_tool(
+        limit=limit,
+        min_score=min_score,
+        max_per_company=max_per_company,
+        us_only=us_only,
+        remote_only=remote_only,
+    )
+
+    shortlist = result.get("shortlist", [])
+    top_plan = result.get("top_job_resume_plan")
+
+    if not shortlist or not top_plan:
+        return {
+            "status": "success",
+            "strategy_mode": strategy_mode,
+            "top_jobs": [],
+            "recommended_job": None,
+            "opportunity_brief": None,
+            "message": "No strong matches found for this run.",
+        }
+
+    recommended_job = shortlist[0]
+
+    why_this_role = (
+        f"{recommended_job['title']} at {recommended_job['company']} ranks highest "
+        f"because it aligns with your preferred engineering domains and skill profile."
+    )
+
+    positioning_angle = (
+        "Position yourself as an engineer with strong backend, platform automation, "
+        "reliability, and systems experience, and emphasize the bullets selected below."
+    )
+
+    action = "apply_now" if recommended_job["score"] >= 80 else "review_later"
+
+    return {
+        "status": "success",
+        "strategy_mode": strategy_mode,
+        "top_jobs": shortlist[:3],
+        "recommended_job": recommended_job,
+        "opportunity_brief": {
+            "why_this_role": why_this_role,
+            "positioning_angle": positioning_angle,
+            "focus_areas": top_plan.get("focus_areas", []),
+            "recommended_skills": top_plan.get("recommended_skills", []),
+            "selected_bullets": top_plan.get("selected_bullets", []),
+            "action": action,
+        },
+    }
