@@ -28,6 +28,8 @@ class RunHuntRequest(BaseModel):
     limit: int = Field(default=10, ge=1, le=50)
     min_score: int = Field(default=45, ge=0, le=100)
     max_per_company: int = Field(default=2, ge=1, le=10)
+    us_only: bool = True
+    remote_only: bool = False
     job_title: str | None = None
     company: str | None = None
     job_description: str | None = None
@@ -49,6 +51,8 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             limit=payload.limit,
             min_score=payload.min_score,
             max_per_company=payload.max_per_company,
+            us_only=payload.us_only,
+            remote_only=payload.remote_only,
         )
 
     if payload.mode == "tailor":
@@ -70,6 +74,8 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             limit=payload.limit,
             min_score=payload.min_score,
             max_per_company=payload.max_per_company,
+            us_only=payload.us_only,
+            remote_only=payload.remote_only,
         )
 
     return {
