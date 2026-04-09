@@ -65,10 +65,10 @@ def build_match_reasons(job, breakdown: dict) -> list[str]:
         else:
             reasons.append("preferred location match")
 
-    if breakdown.get("sponsorship", 0) >= 20:
+    if breakdown.get("sponsorship", 0) >= 18:
         reasons.append("clear sponsorship signal")
     elif breakdown.get("sponsorship", 0) > 0:
-        reasons.append("no negative sponsorship signal found")
+        reasons.append("sponsorship status not explicitly negative")
 
     return reasons[:4]
 
@@ -84,13 +84,11 @@ def score_job(job) -> dict:
     score = 0
     breakdown = {}
 
-    # 1. Title match: 0-25
     preferred_titles = profile["preferred_titles"]
     title_points = 25 if contains_any(title, preferred_titles) else 0
     score += title_points
     breakdown["title_match"] = title_points
 
-    # 2. Domain alignment bonus: 0-8
     domain_terms = [
         "backend",
         "infrastructure",
@@ -102,28 +100,34 @@ def score_job(job) -> dict:
         "cdn",
         "observability",
         "workflows",
-        "distributed systems"
+        "distributed systems",
+        "telemetry",
+        "developer experience",
+        "product platform",
+        "data infrastructure",
     ]
     domain_matches = count_matches(title, domain_terms)
     domain_points = min(8, domain_matches * 4)
     score += domain_points
     breakdown["domain_alignment"] = domain_points
 
-    # 3. Sponsorship signal: 0-20
     positive_sponsorship_terms = [
         "h1b",
         "visa sponsorship",
         "sponsorship available",
         "will sponsor",
+        "we sponsor visas",
+        "employment visa",
         "opt",
-        "cpt"
+        "cpt",
     ]
     negative_sponsorship_terms = [
         "no sponsorship",
         "do not sponsor",
         "unable to sponsor",
         "must be authorized to work without sponsorship",
-        "not provide visa sponsorship"
+        "not provide visa sponsorship",
+        "no visa support",
     ]
 
     if contains_any(description, negative_sponsorship_terms):
@@ -131,32 +135,28 @@ def score_job(job) -> dict:
     elif contains_any(description, positive_sponsorship_terms):
         sponsorship_points = 20
     else:
-        sponsorship_points = 10
+        sponsorship_points = 8
 
     score += sponsorship_points
     breakdown["sponsorship"] = sponsorship_points
 
-    # 4. Must-have skills: 0-25
     must_have_skills = profile["must_have_skills"]
     must_matches = count_matches(combined_text, must_have_skills)
     must_points = min(25, must_matches * 5)
     score += must_points
     breakdown["must_have_skills"] = must_points
 
-    # 5. Nice-to-have skills: 0-12
     nice_to_have_skills = profile["nice_to_have_skills"]
     nice_matches = count_matches(combined_text, nice_to_have_skills)
     nice_points = min(12, nice_matches * 3)
     score += nice_points
     breakdown["nice_to_have_skills"] = nice_points
 
-    # 6. Preferred location: 0-5
     preferred_locations = profile["preferred_locations"]
     location_points = 5 if contains_any(location, preferred_locations) else 0
     score += location_points
     breakdown["location"] = location_points
 
-    # 7. Seniority penalty: subtract 20
     blocked_terms = profile["blocked_seniority_terms"]
     penalty = 20 if contains_any(title, blocked_terms) else 0
     score -= penalty
