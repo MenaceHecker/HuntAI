@@ -34,9 +34,11 @@ root_agent = Agent(
     "- For each shortlisted job, include title, company, location, score, verdict, and link.\n"
     "- Also include 2 to 4 brief reasons explaining why the role matched the profile.\n"
     "- Use verdict labels exactly as returned: Strong Apply, Good Match, Maybe Apply, or Skip.\n"
-    "- If the user asks for the best jobs, prioritize the top 5 most relevant ones instead of a long list.\n"
-    "- Do not invent resume experience. Tailoring must only use approved experience-bank content.\n"
     "- Prefer a diverse shortlist across companies when multiple strong matches exist.\n"
+    "- If the user asks for the best jobs, prioritize the top 5 most relevant ones instead of a long list.\n"
+    "- When using tailor_resume_tool, return the focus areas, recommended skills, and selected bullets clearly.\n"
+    "- Make it obvious that all resume bullets come only from approved experience-bank content.\n"
+    "- Do not invent resume experience. Tailoring must only use approved experience-bank content.\n"
 ),
     tools=[
         discover_jobs_tool,
