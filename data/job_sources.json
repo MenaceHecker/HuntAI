@@ -1,23 +1,13 @@
 [
   {
-    "name": "Stripe",
+    "name": "Vercel",
     "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/stripe/jobs"
-  },
-  {
-    "name": "Plaid",
-    "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/plaid/jobs"
+    "url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs"
   },
   {
     "name": "Datadog",
     "type": "greenhouse",
     "url": "https://boards-api.greenhouse.io/v1/boards/datadog/jobs"
-  },
-  {
-    "name": "Snowflake",
-    "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/snowflake/jobs"
   },
   {
     "name": "Airbnb",
@@ -35,19 +25,9 @@
     "url": "https://boards-api.greenhouse.io/v1/boards/coinbase/jobs"
   },
   {
-    "name": "OpenAI",
-    "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/openai/jobs"
-  },
-  {
     "name": "GumGum",
     "type": "greenhouse",
     "url": "https://boards-api.greenhouse.io/v1/boards/gumgum/jobs"
-  },
-  {
-    "name": "Notion",
-    "type": "greenhouse",
-    "url": "https://boards-api.greenhouse.io/v1/boards/notion/jobs"
   },
   {
     "name": "Figma",
@@ -70,48 +50,8 @@
     "url": "https://boards-api.greenhouse.io/v1/boards/asana/jobs"
   },
   {
-    "name": "Rippling",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/rippling?mode=json"
-  },
-  {
-    "name": "Postman",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/postman?mode=json"
-  },
-  {
-    "name": "Brex",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/brex?mode=json"
-  },
-  {
-    "name": "Scale AI",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/scaleai?mode=json"
-  },
-  {
-    "name": "Retool",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/retool?mode=json"
-  },
-  {
-    "name": "Segment",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/segment?mode=json"
-  },
-  {
-    "name": "Discord",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/discord?mode=json"
-  },
-  {
-    "name": "Twitch",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/twitch?mode=json"
-  },
-  {
-    "name": "Flexport",
-    "type": "lever",
-    "url": "https://api.lever.co/v0/postings/flexport?mode=json"
+    "name": "Stripe",
+    "type": "greenhouse",
+    "url": "https://boards-api.greenhouse.io/v1/boards/stripe/jobs"
   }
 ]
