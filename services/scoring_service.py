@@ -2,6 +2,28 @@ import re
 from services.profile_service import load_profile
 from services.tailoring_service import extract_keywords
 
+STRONG_TITLE_DOMAINS = {
+    "infrastructure": 8,
+    "platform": 8,
+    "distributed systems": 8,
+    "telemetry": 7,
+    "observability": 7,
+    "monitoring": 7,
+    "reliability": 7,
+    "backend": 5,
+    "ci/cd": 6,
+    "developer experience": 5,
+    "product platform": 5,
+    "full stack": 7,
+    "mobile": 6,
+}
+
+WEAK_TITLE_DOMAINS = {
+    "ads": -8,
+    "brands": -6,
+    "frontend": -5,
+    "ui": -6
+}
 STRONG_DOMAINS = {
     "infrastructure",
     "platform",
