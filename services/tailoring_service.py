@@ -3,6 +3,23 @@ import re
 from pathlib import Path
 
 
+PRIORITY_TAG_WEIGHTS = {
+    "infrastructure": 3,
+    "observability": 3,
+    "monitoring": 3,
+    "telemetry": 3,
+    "reliability": 3,
+    "backend": 2,
+    "platform": 2,
+    "cloud": 2,
+    "automation": 2,
+    "security": 2,
+    "distributed systems": 2,
+    "sre": 2,
+    "performance": 2,
+}
+
+
 def normalize(text: str) -> str:
     text = (text or "").lower()
     text = re.sub(r"<[^>]+>", " ", text)
@@ -26,7 +43,7 @@ def extract_keywords(text: str) -> set[str]:
         "aws", "gcp", "docker", "kubernetes", "terraform",
         "react", "next.js", "nextjs", "flask", "fastapi", "spring", "spring boot",
         "backend", "frontend", "platform", "cloud", "infrastructure",
-        "security", "observability", "monitoring", "reliability", "sre",
+        "security", "observability", "monitoring", "telemetry", "reliability", "sre",
         "distributed systems", "automation", "authentication", "performance",
         "api", "apis", "postgresql", "elasticsearch", "grafana", "prometheus",
         "ci/cd", "agents", "ml", "ai", "nlp"
@@ -39,7 +56,12 @@ def extract_keywords(text: str) -> set[str]:
 def score_bullet(job_keywords: set[str], bullet: dict) -> int:
     tags = {normalize(tag) for tag in bullet.get("tags", [])}
     overlap = job_keywords.intersection(tags)
-    return len(overlap)
+
+    score = 0
+    for tag in overlap:
+        score += PRIORITY_TAG_WEIGHTS.get(tag, 1)
+
+    return score
 
 
 def tailor_resume_for_job(job_title: str, company: str, job_description: str = "") -> dict:
@@ -69,7 +91,7 @@ def tailor_resume_for_job(job_title: str, company: str, job_description: str = "
 
     recommended_skills = []
     skill_groups = bank.get("skills", {})
-    for category, items in skill_groups.items():
+    for _, items in skill_groups.items():
         for item in items:
             if normalize(item) in job_keywords:
                 recommended_skills.append(item)
