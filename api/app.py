@@ -1,9 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from adk_app.tools import discover_jobs_tool, score_jobs_tool, tailor_resume_tool
+from adk_agents.huntai.tools import discover_jobs_tool, score_jobs_tool, tailor_resume_tool
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
 
@@ -14,6 +21,7 @@ class RunHuntRequest(BaseModel):
     min_score: int = Field(default=45, ge=0, le=100)
     job_title: str | None = None
     company: str | None = None
+    job_description: str | None = None
     job_link: str | None = None
 
 
@@ -40,6 +48,7 @@ def run_hunt(payload: RunHuntRequest) -> dict:
         return tailor_resume_tool(
             job_title=payload.job_title,
             company=payload.company,
+            job_description=payload.job_description or "",
             job_link=payload.job_link or "",
         )
 
