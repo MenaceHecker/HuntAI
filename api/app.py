@@ -19,19 +19,19 @@ from adk_agents.huntai.tools import (
 )
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
-strategy_mode: str = Field(default="safe_apply")
 
 
 class RunHuntRequest(BaseModel):
     mode: str = Field(
         default="score",
-        description="discover | score | tailor | score_and_tailor_top",
+        description="discover | score | tailor | score_and_tailor_top | opportunity_brief",
     )
     limit: int = Field(default=10, ge=1, le=50)
     min_score: int = Field(default=45, ge=0, le=100)
     max_per_company: int = Field(default=2, ge=1, le=10)
     us_only: bool = True
     remote_only: bool = False
+    strategy_mode: str = Field(default="safe_apply")
     job_title: str | None = None
     company: str | None = None
     job_description: str | None = None
@@ -70,15 +70,6 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             job_description=payload.job_description or "",
             job_link=payload.job_link or "",
         )
-    if payload.mode == "opportunity_brief":
-        return build_opportunity_brief_tool(
-        limit=payload.limit,
-        min_score=payload.min_score,
-        max_per_company=payload.max_per_company,
-        us_only=payload.us_only,
-        remote_only=payload.remote_only,
-        strategy_mode=payload.strategy_mode,
-    )
 
     if payload.mode == "score_and_tailor_top":
         return score_and_tailor_top_tool(
@@ -89,7 +80,17 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             remote_only=payload.remote_only,
         )
 
+    if payload.mode == "opportunity_brief":
+        return build_opportunity_brief_tool(
+            limit=payload.limit,
+            min_score=payload.min_score,
+            max_per_company=payload.max_per_company,
+            us_only=payload.us_only,
+            remote_only=payload.remote_only,
+            strategy_mode=payload.strategy_mode,
+        )
+
     return {
         "status": "error",
-        "message": "Invalid mode. Use discover, score, tailor, or score_and_tailor_top.",
+        "message": "Invalid mode. Use discover, score, tailor, score_and_tailor_top, or opportunity_brief.",
     }
