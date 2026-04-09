@@ -85,5 +85,14 @@ def tailor_resume_tool(job_title: str, company: str, job_description: str = "", 
         job_description=job_description,
     )
 
-    result["target_job"]["link"] = job_link
-    return result
+    return {
+        "status": result["status"],
+        "target_job": {
+            "title": job_title,
+            "company": company,
+            "link": job_link,
+        },
+        "focus_areas": result["focus_areas"][:5],
+        "recommended_skills": result["recommended_skills"][:6],
+        "selected_bullets": result["selected_bullets"][:4],
+    }
