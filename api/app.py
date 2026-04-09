@@ -19,6 +19,7 @@ from adk_agents.huntai.tools import (
 )
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
+strategy_mode: str = Field(default="safe_apply")
 
 
 class RunHuntRequest(BaseModel):
@@ -69,6 +70,15 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             job_description=payload.job_description or "",
             job_link=payload.job_link or "",
         )
+    if payload.mode == "opportunity_brief":
+        return build_opportunity_brief_tool(
+        limit=payload.limit,
+        min_score=payload.min_score,
+        max_per_company=payload.max_per_company,
+        us_only=payload.us_only,
+        remote_only=payload.remote_only,
+        strategy_mode=payload.strategy_mode,
+    )
 
     if payload.mode == "score_and_tailor_top":
         return score_and_tailor_top_tool(
