@@ -55,6 +55,19 @@ def compute_domain_score(job_keywords: set[str]) -> int:
     return max(0, min(score, 12))
 
 
+def title_domain_boost(title: str) -> int:
+    t = title.lower()
+
+    if any(x in t for x in ["infrastructure", "platform", "systems"]):
+        return 6
+    if "backend" in t:
+        return 3
+    if any(x in t for x in ["frontend", "ads", "ui"]):
+        return -2
+
+    return 0
+
+
 def get_verdict(score: int) -> str:
     if score >= 80:
         return "Strong Apply"
@@ -123,6 +136,10 @@ def score_job(job) -> dict:
     domain_points = compute_domain_score(job_keywords)
     score += domain_points
     breakdown["domain_alignment"] = domain_points
+
+    title_domain_points = title_domain_boost(job.title)
+    score += title_domain_points
+    breakdown["title_domain_boost"] = title_domain_points
 
     positive_sponsorship_terms = [
         "h1b",
