@@ -108,6 +108,10 @@ Next things to add
 - generate tailored resumes automatically
 - clean up email formatting
 
+## Workflow
+
+![HuntAI Workflow](assets/workflow.png)
+
 
 Why I made this
 
