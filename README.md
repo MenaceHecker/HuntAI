@@ -111,6 +111,7 @@ Next things to add
 ## Workflow
 
 ![HuntAI Workflow](assets/workflow.png)
+This workflow runs daily, evaluates job opportunities, and sends a curated summary via email.
 
 
 Why I made this
