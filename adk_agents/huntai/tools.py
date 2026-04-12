@@ -36,6 +36,64 @@ def save_seen_jobs(seen_jobs: list[dict[str, Any]]) -> None:
         json.dump(seen_jobs, f, indent=2)
 
 
+def apply_strategy_mode(
+    scored_jobs: list[dict],
+    strategy_mode: str = "safe_apply",
+) -> list[dict]:
+    brand_priority = {
+        "OpenAI",
+        "Stripe",
+        "Datadog",
+        "Snowflake",
+        "Dropbox",
+        "Figma",
+        "Asana",
+        "Vercel",
+        "Roblox",
+        "Coinbase",
+        "Airbnb",
+    }
+
+    visa_priority = {
+        "Stripe",
+        "Datadog",
+        "Dropbox",
+        "Asana",
+        "Figma",
+        "Vercel",
+        "Roblox",
+        "Coinbase",
+        "Airbnb",
+    }
+
+    boosted = []
+
+    for item in scored_jobs:
+        adjusted = dict(item)
+        adjusted_score = item["score"]
+        company = item["job"].company
+        sponsorship = item["breakdown"].get("sponsorship", 0)
+
+        if strategy_mode == "safe_apply":
+            adjusted_score += 0
+        elif strategy_mode == "stretch_apply":
+            adjusted_score += 3
+        elif strategy_mode == "brand_first":
+            if company in brand_priority:
+                adjusted_score += 8
+        elif strategy_mode == "visa_first":
+            if sponsorship >= 15:
+                adjusted_score += 8
+            elif company in visa_priority:
+                adjusted_score += 4
+
+        adjusted["strategy_score"] = adjusted_score
+        boosted.append(adjusted)
+
+    boosted.sort(key=lambda item: item["strategy_score"], reverse=True)
+    return boosted
+
+
 def is_us_location(location: str) -> bool:
     location = (location or "").lower()
 
