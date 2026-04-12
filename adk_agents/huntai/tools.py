@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import sys
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SEEN_JOBS_PATH = PROJECT_ROOT / "seen_jobs.json"
+
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -13,6 +16,24 @@ from agents.eligibility_agent import filter_jobs
 from services.dedupe_service import unique_jobs
 from services.scoring_service import score_jobs
 from services.tailoring_service import tailor_resume_for_job
+
+
+def load_seen_jobs() -> list[dict[str, Any]]:
+    if not SEEN_JOBS_PATH.exists():
+        return []
+
+    try:
+        with SEEN_JOBS_PATH.open() as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return []
+
+    return data if isinstance(data, list) else []
+
+
+def save_seen_jobs(seen_jobs: list[dict[str, Any]]) -> None:
+    with SEEN_JOBS_PATH.open("w") as f:
+        json.dump(seen_jobs, f, indent=2)
 
 
 def is_us_location(location: str) -> bool:
@@ -112,6 +133,10 @@ def score_jobs_tool(
     jobs = unique_jobs(jobs)
     jobs = filter_jobs(jobs)
 
+    seen = load_seen_jobs()
+    seen_links = {job.get("link") for job in seen if isinstance(job, dict)}
+    jobs = [job for job in jobs if job.link not in seen_links]
+
     scored = score_jobs(jobs)
 
     if us_only:
@@ -155,6 +180,9 @@ def score_jobs_tool(
                 "description": job.description or "",
             }
         )
+
+    seen.extend(results)
+    save_seen_jobs(seen)
 
     return {
         "status": "success",
