@@ -186,6 +186,7 @@ def score_jobs_tool(
     max_per_company: int = 2,
     us_only: bool = True,
     remote_only: bool = False,
+    strategy_mode: str = "safe_apply",
 ) -> dict[str, Any]:
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
