@@ -197,6 +197,7 @@ def score_jobs_tool(
     jobs = [job for job in jobs if job.link not in seen_links]
 
     scored = score_jobs(jobs)
+    scored = apply_strategy_mode(scored, strategy_mode=strategy_mode)
 
     if us_only:
         scored = [item for item in scored if is_us_location(item["job"].location)]
@@ -204,7 +205,7 @@ def score_jobs_tool(
     if remote_only:
         scored = [item for item in scored if is_remote_location(item["job"].location)]
 
-    scored = [item for item in scored if item["score"] >= min_score]
+    scored = [item for item in scored if item["strategy_score"] >= min_score]
 
     company_counts: dict[str, int] = {}
     diversified = []
@@ -233,6 +234,8 @@ def score_jobs_tool(
                 "link": job.link,
                 "source": job.source,
                 "score": item["score"],
+                "strategy_score": item["strategy_score"],
+                "strategy_mode": strategy_mode,
                 "verdict": item["verdict"],
                 "reasons": item["reasons"],
                 "breakdown": item["breakdown"],
@@ -282,6 +285,7 @@ def score_and_tailor_top_tool(
     max_per_company: int = 2,
     us_only: bool = True,
     remote_only: bool = False,
+    strategy_mode: str = "safe_apply",
 ) -> dict[str, Any]:
     scored_result = score_jobs_tool(
         limit=limit,
@@ -289,6 +293,7 @@ def score_and_tailor_top_tool(
         max_per_company=max_per_company,
         us_only=us_only,
         remote_only=remote_only,
+        strategy_mode=strategy_mode,
     )
 
     results = scored_result.get("results", [])
@@ -337,6 +342,7 @@ def build_opportunity_brief_tool(
         max_per_company=max_per_company,
         us_only=us_only,
         remote_only=remote_only,
+        strategy_mode=strategy_mode,
     )
 
     shortlist = result.get("shortlist", [])

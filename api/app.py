@@ -55,6 +55,7 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             max_per_company=payload.max_per_company,
             us_only=payload.us_only,
             remote_only=payload.remote_only,
+            strategy_mode=payload.strategy_mode,
         )
 
     if payload.mode == "tailor":
@@ -78,6 +79,7 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             max_per_company=payload.max_per_company,
             us_only=payload.us_only,
             remote_only=payload.remote_only,
+            strategy_mode=payload.strategy_mode,
         )
 
     if payload.mode == "opportunity_brief":
