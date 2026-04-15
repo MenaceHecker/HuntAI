@@ -16,6 +16,7 @@ from adk_agents.huntai.tools import (
     tailor_resume_tool,
     score_and_tailor_top_tool,
     build_opportunity_brief_tool,
+    build_multi_strategy_brief_tool,
 )
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
@@ -24,7 +25,7 @@ app = FastAPI(title="HuntAI API", version="0.1.0")
 class RunHuntRequest(BaseModel):
     mode: str = Field(
         default="score",
-        description="discover | score | tailor | score_and_tailor_top | opportunity_brief",
+        description="discover | score | tailor | score_and_tailor_top | opportunity_brief | multi_strategy_brief",
     )
     limit: int = Field(default=10, ge=1, le=50)
     min_score: int = Field(default=45, ge=0, le=100)
@@ -92,7 +93,16 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             strategy_mode=payload.strategy_mode,
         )
 
+    if payload.mode == "multi_strategy_brief":
+        return build_multi_strategy_brief_tool(
+            limit=payload.limit,
+            min_score=payload.min_score,
+            max_per_company=payload.max_per_company,
+            us_only=payload.us_only,
+            remote_only=payload.remote_only,
+        )
+
     return {
         "status": "error",
-        "message": "Invalid mode. Use discover, score, tailor, score_and_tailor_top, or opportunity_brief.",
+        "message": "Invalid mode. Use discover, score, tailor, score_and_tailor_top, opportunity_brief, or multi_strategy_brief.",
     }
