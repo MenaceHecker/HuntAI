@@ -324,8 +324,18 @@ def score_jobs_tool(
             }
         )
 
-    seen.extend(results)
-    save_seen_jobs(seen)
+    updated_seen_index = dict(seen_index)
+
+    for result in results:
+        link = result["link"]
+        existing = updated_seen_index.get(link)
+
+        if existing:
+            updated_seen_index[link] = merge_job_state(existing, result, strategy_mode)
+        else:
+            updated_seen_index[link] = initialize_job_state(result, strategy_mode)
+
+    save_seen_jobs(list(updated_seen_index.values()))
 
     return {
         "status": "success",
