@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 from typing import Any
+from datetime import datetime, timezone
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SEEN_JOBS_PATH = PROJECT_ROOT / "seen_jobs.json"
@@ -34,6 +35,81 @@ def load_seen_jobs() -> list[dict[str, Any]]:
 def save_seen_jobs(seen_jobs: list[dict[str, Any]]) -> None:
     with SEEN_JOBS_PATH.open("w") as f:
         json.dump(seen_jobs, f, indent=2)
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def index_seen_jobs(seen_jobs: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    indexed: dict[str, dict[str, Any]] = {}
+    for job in seen_jobs:
+        link = job.get("link")
+        if isinstance(link, str) and link:
+            indexed[link] = job
+    return indexed
+
+
+def initialize_job_state(job_payload: dict[str, Any], strategy_mode: str) -> dict[str, Any]:
+    timestamp = now_iso()
+    enriched = dict(job_payload)
+    enriched["first_seen"] = timestamp
+    enriched["last_seen"] = timestamp
+    enriched["times_seen"] = 1
+    enriched["strategies_seen"] = [strategy_mode]
+    enriched["statuses"] = {
+        "emailed": True,
+        "saved": False,
+        "applied": False,
+        "rejected": False,
+    }
+    return enriched
+
+
+def merge_job_state(
+    existing: dict[str, Any],
+    new_payload: dict[str, Any],
+    strategy_mode: str,
+) -> dict[str, Any]:
+    merged = dict(existing)
+
+    # Refresh the latest scoring and content fields while preserving stateful metadata.
+    for key, value in new_payload.items():
+        merged[key] = value
+
+    merged["last_seen"] = now_iso()
+    merged["times_seen"] = int(existing.get("times_seen", 0)) + 1
+
+    strategies_seen = existing.get("strategies_seen", [])
+    if not isinstance(strategies_seen, list):
+        strategies_seen = []
+    if strategy_mode not in strategies_seen:
+        strategies_seen.append(strategy_mode)
+    merged["strategies_seen"] = strategies_seen
+
+    statuses = existing.get("statuses", {})
+    if not isinstance(statuses, dict):
+        statuses = {}
+
+    merged["statuses"] = {
+        "emailed": bool(statuses.get("emailed", True)),
+        "saved": bool(statuses.get("saved", False)),
+        "applied": bool(statuses.get("applied", False)),
+        "rejected": bool(statuses.get("rejected", False)),
+    }
+
+    return merged
+
+
+def should_skip_job(existing: dict[str, Any] | None) -> bool:
+    if not existing:
+        return False
+
+    statuses = existing.get("statuses", {})
+    if not isinstance(statuses, dict):
+        return False
+
+    return bool(statuses.get("applied")) or bool(statuses.get("rejected"))
 
 
 def apply_strategy_mode(
