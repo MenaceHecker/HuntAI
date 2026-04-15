@@ -386,3 +386,36 @@ def build_opportunity_brief_tool(
             "action": action,
         },
     }
+
+
+def build_multi_strategy_brief_tool(
+    limit: int = 3,
+    min_score: int = 45,
+    max_per_company: int = 2,
+    us_only: bool = True,
+    remote_only: bool = False,
+) -> dict[str, Any]:
+    strategies = [
+        "safe_apply",
+        "brand_first",
+        "visa_first",
+        "stretch_apply",
+    ]
+
+    results = {}
+
+    for strategy in strategies:
+        result = build_opportunity_brief_tool(
+            limit=limit,
+            min_score=min_score,
+            max_per_company=max_per_company,
+            us_only=us_only,
+            remote_only=remote_only,
+            strategy_mode=strategy,
+        )
+        results[strategy] = result
+
+    return {
+        "status": "success",
+        "strategies": results,
+    }
