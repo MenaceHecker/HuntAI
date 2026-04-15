@@ -269,8 +269,13 @@ def score_jobs_tool(
     jobs = filter_jobs(jobs)
 
     seen = load_seen_jobs()
-    seen_links = {job.get("link") for job in seen if isinstance(job, dict)}
-    jobs = [job for job in jobs if job.link not in seen_links]
+    seen_index = index_seen_jobs(seen)
+
+    jobs = [
+        job
+        for job in jobs
+        if not should_skip_job(seen_index.get(job.link))
+    ]
 
     scored = score_jobs(jobs)
     scored = apply_strategy_mode(scored, strategy_mode=strategy_mode)
