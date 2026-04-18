@@ -55,6 +55,7 @@ def initialize_job_state(job_payload: dict[str, Any], strategy_mode: str) -> dic
     enriched = dict(job_payload)
     enriched["first_seen"] = timestamp
     enriched["last_seen"] = timestamp
+    enriched["last_emailed_at"] = timestamp
     enriched["times_seen"] = 1
     enriched["strategies_seen"] = [strategy_mode]
     enriched["statuses"] = {
