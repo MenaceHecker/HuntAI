@@ -393,15 +393,21 @@ def score_jobs_tool(
         )
 
     updated_seen_index = dict(seen_index)
+    email_timestamp = now_iso()
 
     for result in results:
         link = result["link"]
         existing = updated_seen_index.get(link)
 
         if existing:
-            updated_seen_index[link] = merge_job_state(existing, result, strategy_mode)
+            merged = merge_job_state(existing, result, strategy_mode)
+            merged["statuses"]["emailed"] = True
+            merged["last_emailed_at"] = email_timestamp
+            updated_seen_index[link] = merged
         else:
-            updated_seen_index[link] = initialize_job_state(result, strategy_mode)
+            created = initialize_job_state(result, strategy_mode)
+            created["last_emailed_at"] = email_timestamp
+            updated_seen_index[link] = created
 
     save_seen_jobs(list(updated_seen_index.values()))
 
