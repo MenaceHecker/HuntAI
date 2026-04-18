@@ -339,6 +339,12 @@ def score_jobs_tool(
         if not should_skip_job(seen_index.get(job.link))
     ]
 
+    jobs = [
+        job
+        for job in jobs
+        if not was_emailed_recently(seen_index.get(job.link, {}), suppress_days=suppress_days)
+    ]
+
     scored = score_jobs(jobs)
     scored = apply_strategy_mode(scored, strategy_mode=strategy_mode)
 
