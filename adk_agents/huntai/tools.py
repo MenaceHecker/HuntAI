@@ -74,7 +74,6 @@ def merge_job_state(
 ) -> dict[str, Any]:
     merged = dict(existing)
 
-    # Refresh the latest scoring and content fields while preserving stateful metadata.
     for key, value in new_payload.items():
         merged[key] = value
 
@@ -98,6 +97,8 @@ def merge_job_state(
         "applied": bool(statuses.get("applied", False)),
         "rejected": bool(statuses.get("rejected", False)),
     }
+
+    merged["last_emailed_at"] = existing.get("last_emailed_at")
 
     return merged
 
@@ -323,6 +324,7 @@ def score_jobs_tool(
     us_only: bool = True,
     remote_only: bool = False,
     strategy_mode: str = "safe_apply",
+    suppress_days: int = 3,
 ) -> dict[str, Any]:
     jobs = fetch_jobs()
     jobs = unique_jobs(jobs)
