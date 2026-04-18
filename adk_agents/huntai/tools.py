@@ -112,6 +112,39 @@ def should_skip_job(existing: dict[str, Any] | None) -> bool:
     return bool(statuses.get("applied")) or bool(statuses.get("rejected"))
 
 
+def list_jobs_by_status_tool(status: str, limit: int = 20) -> dict[str, Any]:
+    valid_statuses = {"saved", "applied", "rejected"}
+
+    if status not in valid_statuses:
+        return {
+            "status": "error",
+            "message": f"Invalid status '{status}'. Must be one of: {sorted(valid_statuses)}",
+        }
+
+    seen = load_seen_jobs()
+
+    matching_jobs = []
+    for job in seen:
+        statuses = job.get("statuses", {})
+        if not isinstance(statuses, dict):
+            continue
+
+        if statuses.get(status):
+            matching_jobs.append(job)
+
+    matching_jobs.sort(
+        key=lambda job: job.get("last_seen", ""),
+        reverse=True,
+    )
+
+    return {
+        "status": "success",
+        "requested_status": status,
+        "count": len(matching_jobs[:limit]),
+        "jobs": matching_jobs[:limit],
+    }
+
+
 def apply_strategy_mode(
     scored_jobs: list[dict],
     strategy_mode: str = "safe_apply",
