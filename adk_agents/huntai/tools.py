@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import sys
 from typing import Any
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SEEN_JOBS_PATH = PROJECT_ROOT / "seen_jobs.json"
@@ -110,6 +110,32 @@ def should_skip_job(existing: dict[str, Any] | None) -> bool:
         return False
 
     return bool(statuses.get("applied")) or bool(statuses.get("rejected"))
+
+
+def parse_iso_datetime(value: str | None) -> datetime | None:
+    if not value or not isinstance(value, str):
+        return None
+
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def was_emailed_recently(job_state: dict[str, Any], suppress_days: int = 3) -> bool:
+    statuses = job_state.get("statuses", {})
+    if not isinstance(statuses, dict):
+        return False
+
+    if not statuses.get("emailed"):
+        return False
+
+    last_emailed = parse_iso_datetime(job_state.get("last_emailed_at"))
+    if not last_emailed:
+        return False
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=suppress_days)
+    return last_emailed >= cutoff
 
 
 def list_jobs_by_status_tool(status: str, limit: int = 20) -> dict[str, Any]:
