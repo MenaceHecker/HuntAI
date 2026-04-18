@@ -17,6 +17,7 @@ from adk_agents.huntai.tools import (
     score_and_tailor_top_tool,
     build_opportunity_brief_tool,
     build_multi_strategy_brief_tool,
+    list_jobs_by_status_tool,
 )
 
 app = FastAPI(title="HuntAI API", version="0.1.0")
@@ -25,7 +26,7 @@ app = FastAPI(title="HuntAI API", version="0.1.0")
 class RunHuntRequest(BaseModel):
     mode: str = Field(
         default="score",
-        description="discover | score | tailor | score_and_tailor_top | opportunity_brief | multi_strategy_brief",
+        description="discover | score | tailor | score_and_tailor_top | opportunity_brief | multi_strategy_brief | list_jobs_by_status",
     )
     limit: int = Field(default=10, ge=1, le=50)
     min_score: int = Field(default=45, ge=0, le=100)
@@ -33,6 +34,7 @@ class RunHuntRequest(BaseModel):
     us_only: bool = True
     remote_only: bool = False
     strategy_mode: str = Field(default="safe_apply")
+    status: str | None = None
     job_title: str | None = None
     company: str | None = None
     job_description: str | None = None
@@ -102,7 +104,19 @@ def run_hunt(payload: RunHuntRequest) -> dict:
             remote_only=payload.remote_only,
         )
 
+    if payload.mode == "list_jobs_by_status":
+        if not payload.status:
+            return {
+                "status": "error",
+                "message": "status is required for list_jobs_by_status mode.",
+            }
+
+        return list_jobs_by_status_tool(
+            status=payload.status,
+            limit=payload.limit,
+        )
+
     return {
         "status": "error",
-        "message": "Invalid mode. Use discover, score, tailor, score_and_tailor_top, opportunity_brief, or multi_strategy_brief.",
+        "message": "Invalid mode. Use discover, score, tailor, score_and_tailor_top, opportunity_brief, multi_strategy_brief, or list_jobs_by_status.",
     }
